@@ -4,38 +4,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 const routes = require('./routes');
-const bcrypt = require('bcryptjs');
-
-const users = [
-	{
-		userId: 1,
-		login: 'john',
-		name: 'John',
-		password: bcrypt.hashSync('abc123', 10),
-	},
-	{
-		userId: 2,
-		login: 'jane',
-		name: 'Jane',
-		password: bcrypt.hashSync('abc123', 10),
-	},
-	{
-		userId: 3,
-		login: 'jack',
-		name: 'Jack',
-		password: bcrypt.hashSync('abc123', 10),
-	},
-];
-
-const login = process.argv[2];
-
-const user = users.find((user) => user.login === login);
-
-if (user) {
-	console.log(`User selected: ${user.name}`);
-} else {
-	console.log('User not found');
-}
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
