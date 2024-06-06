@@ -229,6 +229,7 @@ router.put('/ads/:id', authenticate, express.json(), async (req, res) => {
 		req.body.userId = req.user;
 
 		for (const key in req.body) {
+			if (key === 'date' || key === 'modifiedDate') continue;
 			if (typeof req.body[key] !== typeof ad[key]) {
 				return res
 					.status(400)
