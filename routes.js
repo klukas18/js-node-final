@@ -207,7 +207,6 @@ router.post(
 );
 
 // 5. Modify selected ad
-
 router.put('/ads/:id', authenticate, express.json(), async (req, res) => {
 	try {
 		const adsCollection = await getAdsCollection();
@@ -216,6 +215,10 @@ router.put('/ads/:id', authenticate, express.json(), async (req, res) => {
 			_id: new ObjectId(req.params.id),
 		});
 
+		if (!ad) {
+			return res.status(404).send('Ad not found');
+		}
+
 		if (ad.userId !== req.user) {
 			return res
 				.status(403)
@@ -223,6 +226,15 @@ router.put('/ads/:id', authenticate, express.json(), async (req, res) => {
 		}
 
 		req.body.modifiedDate = new Date();
+		req.body.userId = req.user;
+
+		for (const key in req.body) {
+			if (typeof req.body[key] !== typeof ad[key]) {
+				return res
+					.status(400)
+					.send(`Invalid type for property ${key}, expected ${typeof ad[key]}`);
+			}
+		}
 
 		const result = await adsCollection.updateOne(
 			{ _id: new ObjectId(req.params.id) },
@@ -234,13 +246,13 @@ router.put('/ads/:id', authenticate, express.json(), async (req, res) => {
 				_id: new ObjectId(req.params.id),
 			});
 			console.log('Ad successfully updated!');
-			console.log(modifiedAd);
+			console.log('modifiedAd:', modifiedAd);
 			res.status(200).send(modifiedAd);
 		} else {
 			res.status(404).send(`Ad not found`);
 		}
 	} catch (error) {
-		console.error(error);
+		console.error('Error:', error);
 		res.status(500).send(`An error occurred while updating the ad.`);
 	}
 });
